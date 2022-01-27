@@ -84,6 +84,7 @@ def input_s(prompt: str = "", interrupt: str = "", eof: str = "logout") -> str:
 
 
 Handler = Callable[["CommandTree", str, str], None]
+Wrapper = Callable[[Callable[["CommandTree", str, Any], None]], Handler]
 
 
 class CommandTree:
@@ -109,7 +110,7 @@ class CommandTree:
         self,
         input: Optional[Callable[[str, str, str], str]] = None,
         output: Optional[Callable[[str], None]] = None
-    ):
+    ) -> None:
         def logout_func(tree: CommandTree, cmd: str, arg: str):
             logout(tree)
 
@@ -119,7 +120,8 @@ class CommandTree:
         self.input = input if input else input_s
         self.print = output if output else print
 
-    def add_command(self, command: str, override: bool = False):
+    def add_command(self, command: str, override: bool = False) -> \
+            Callable[[Handler], Handler]:
         """
         A decorator that add a command to the CommandTree.
 
@@ -193,12 +195,12 @@ class CommandTree:
         prompt: str = ">>> ",
         interrupt: str = "",
         eof: str = "logout"
-    ):
+    ) -> None:
         """Receive an input and process."""
         self.terminated = False
         input_c = self.input(prompt, interrupt, eof)
         cmd, _, arg = input_c.partition(" ")
-        if len(cmd) > 0:
+        if len(cmd):
             self.run_command(cmd, arg)
 
     def interactive(
@@ -206,13 +208,13 @@ class CommandTree:
         prompt: str = ">>> ",
         interrupt: str = "",
         eof: str = "logout"
-    ):
+    ) -> None:
         """Run in interactive mode."""
         while not self.terminated:
             self.wait_input(prompt, interrupt, eof)
 
 
-def argparse_wrapper(parser: argparse.ArgumentParser):
+def argparse_wrapper(parser: argparse.ArgumentParser) -> Wrapper:
     """
     Wrap function to adapt CommandTree object.
 
