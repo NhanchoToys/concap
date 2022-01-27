@@ -3,27 +3,24 @@ a console implement
 """
 from __future__ import annotations
 
-from typing import Any, Callable, Optional
-from sys import version_info as _pyversion
+from typing import Any, Callable, Optional, List, Dict, Sequence
 import argparse
-
-if _pyversion.major == 3:
-    if 7 <= _pyversion.minor < 9:
-        from typing import List, Dict
-    elif _pyversion.minor >= 9:
-        List, Dict = list, dict
 
 __version__ = "0.2.1"
 
 
 class ConsoleArgumentParser(argparse.ArgumentParser):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if "tree" not in kwargs:
             raise TypeError("'tree' not specified")
-        self._console_tree = kwargs.pop("tree")
+        self._console_tree: "CommandTree" = kwargs.pop("tree")
         super().__init__(*args, **kwargs)
 
-    def parse_args(self, args=None, namespace=None):
+    def parse_args(  # type: ignore
+        self,
+        args: Sequence[str],
+        namespace: Optional[argparse.Namespace] = None
+    ) -> Optional[argparse.Namespace]:
         _args, argv = self.parse_known_args(args, namespace)
         if "-h" in args or "--help" in args:
             return None
@@ -33,25 +30,29 @@ class ConsoleArgumentParser(argparse.ArgumentParser):
             return None
         return _args
 
-    def _print_message(self, message, _=None):
+    def _print_message(self, message: str, file: Any = None) -> None:
         if message:
             self._console_tree.print(message)
 
-    def exit(self, status: int = 0, message: Optional[str] = None):
+    def exit(  # type: ignore
+        self,
+        status: int = 0,
+        message: Optional[str] = None
+    ) -> None:
         if message:
             self._print_message(message)
 
-    def error(self, message):
+    def error(self, message: str) -> None:  # type: ignore
         self.print_usage()
         self.exit(2, ('Error: %s\n') % message)
 
 
-def command_not_found(tree: "CommandTree", cmd: str, _: str):
+def command_not_found(tree: "CommandTree", cmd: str, _: str) -> None:
     """Internal command-not-found trigger."""
     tree.print(f"{cmd}: command not found")
 
 
-def logout(tree: "CommandTree"):
+def logout(tree: "CommandTree") -> None:
     """Internal 'logout' trigger."""
     tree.terminated = True
 
@@ -104,7 +105,7 @@ class CommandTree:
     terminated: bool
     input: Callable[[str, str, str], str]
     print: Callable[[str], None]
-    _funcs: Dict[str, Handler]  # type: ignore
+    _funcs: Dict[str, Handler]
 
     def __init__(
         self,
