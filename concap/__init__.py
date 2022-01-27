@@ -13,7 +13,7 @@ if _pyversion.major == 3:
     elif _pyversion.minor >= 9:
         List, Dict = list, dict
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 
 class ConsoleArgumentParser(argparse.ArgumentParser):

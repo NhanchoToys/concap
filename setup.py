@@ -24,6 +24,9 @@ setup(
         author_email="worldmozara@163.com",
         url="https://github.com/NCBM/concap",
         packages=find_packages(),
+        package_data={
+            "concap": ["py.typed"]
+        },
         classifiers=[
             "Operating System :: OS Independent",
             "Programming Language :: Python :: 3",
