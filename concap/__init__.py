@@ -104,7 +104,7 @@ class CommandTree:
     terminated: bool
     input: Callable[[str, str, str], str]
     print: Callable[[str], None]
-    _funcs: Dict[str, Handler]
+    _funcs: Dict[str, Handler]  # type: ignore
 
     def __init__(
         self,
@@ -151,11 +151,12 @@ class CommandTree:
             return func
         return _decorator
 
-    def list_command(self) -> List[str]:
+    def list_command(self) -> List[str]:  # type: ignore
         """Return all registered command."""
         return list(self._funcs)
 
-    def find_command(self, keyword: Optional[str] = None) -> List[str]:
+    def find_command(self, keyword: Optional[str] = None)\
+            -> List[str]:  # type: ignore
         """
         Return a list of command that matches the keyword.
 
@@ -166,7 +167,7 @@ class CommandTree:
         cmds = self.list_command()
         if keyword is None:
             return cmds
-        result: List[str] = []
+        result: List[str] = []  # type: ignore
         for cmd in cmds:
             if cmd.find(keyword) == 0:
                 result.append(cmd)
