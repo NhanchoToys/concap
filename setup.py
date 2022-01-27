@@ -22,7 +22,7 @@ setup(
         long_description_content_type="text/markdown",
         author="HivertMoZara",  # 以pypi用户名为准
         author_email="worldmozara@163.com",
-        url="https://github.com/WorldMoZara/concap",
+        url="https://github.com/NCBM/concap",
         packages=find_packages(),
         classifiers=[
             "Operating System :: OS Independent",
